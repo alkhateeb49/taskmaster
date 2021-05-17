@@ -49,6 +49,3 @@ Create a Settings page. It should allow users to enter their username and hit sa
 
 * Settings Page<br/>
 ![image description](screenshots/5.png)
-
-
-
