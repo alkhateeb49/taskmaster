@@ -38,13 +38,13 @@ The all tasks page should just be an image with a back button; it needs no funct
 * All Task<br/>
 ![image description](screenshots/3.png)
 
-* Task Detail Page<br/>
+### Task Detail Page<br/>
 Create a Task Detail page. It should have a title at the top of the page, and a Lorem Ipsum description.
 
 * Task Detail<br/>
 ![image description](screenshots/4.png)
 
-* Settings Page<br/>
+### Settings Page<br/>
 Create a Settings page. It should allow users to enter their username and hit save.
 
 * Settings Page<br/>
