@@ -1,6 +1,8 @@
 package com.example.taskmaster;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -84,6 +88,19 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        /* */
+        String lorem ="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.";
+        ArrayList<Tasks> tasks = new ArrayList<>();
+        tasks.add(new Tasks("1st Task", lorem , "first state"));
+        tasks.add(new Tasks("2ed Task", lorem, "second state"));
+        tasks.add(new Tasks("3rd Task", lorem, "third state"));
+        tasks.add(new Tasks("4th Task ", lorem, "fourth state"));
+
+        RecyclerView taskList = findViewById(R.id.recyclerView);
+        taskList.setLayoutManager(new LinearLayoutManager(this));
+        taskList.setAdapter(new TaskAdapter(   this, tasks));
+        /* */
 
     }
 }
