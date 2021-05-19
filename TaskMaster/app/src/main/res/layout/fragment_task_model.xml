@@ -6,7 +6,7 @@
     tools:context=".TaskModel">
 
     <LinearLayout
-        android:layout_margin="20dp"
+        android:layout_margin="0dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +14,7 @@
         <!-- TODO: Update blank fragment layout -->
         <TextView
             android:id="@+id/fTitle"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:text="Tilte" />
         <TextView
             android:id="@+id/fBody"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:text="Body" />
         <TextView
             android:id="@+id/fState"
-            android:layout_margin="20dp"
+            android:layout_margin="10dp"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:layout_width="match_parent"
