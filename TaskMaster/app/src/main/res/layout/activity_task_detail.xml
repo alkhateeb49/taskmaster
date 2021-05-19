@@ -35,6 +35,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        android:textAlignment="center"
         android:id="@+id/state"
         android:layout_width="250dp"
         android:layout_height="107dp"

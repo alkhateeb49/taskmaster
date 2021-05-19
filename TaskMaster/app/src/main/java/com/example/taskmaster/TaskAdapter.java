@@ -10,12 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     Context context;
-    public ArrayList<Tasks> tasksList;
+//    public ArrayList<Tasks> tasksList;
+    public List<Tasks> tasksList;
 
-    public TaskAdapter(Context mContext, ArrayList<Tasks> tasksList) {
+    public TaskAdapter(Context mContext, List<Tasks> tasksList) {
         this.context = mContext;
         this.tasksList = tasksList;
     }
