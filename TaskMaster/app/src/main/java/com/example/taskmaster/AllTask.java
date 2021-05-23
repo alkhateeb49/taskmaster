@@ -14,6 +14,7 @@ public class AllTask extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_task);
+        this.setTitle("All Task");
 
         home_btn= findViewById(R.id.home_back);
 

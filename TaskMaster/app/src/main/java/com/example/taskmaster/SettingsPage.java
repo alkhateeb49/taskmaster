@@ -22,6 +22,7 @@ public class SettingsPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_page);
+        this.setTitle("Settings Page");
 
         username=findViewById(R.id.username);
         btn_save = findViewById(R.id.save);

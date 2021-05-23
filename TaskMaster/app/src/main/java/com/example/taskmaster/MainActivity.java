@@ -28,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setTitle("Main Activity");
         btn_add = findViewById(R.id.addTask);
         btn_all = findViewById(R.id.allTask);
-
         btn_task_1= findViewById(R.id.task1);
         btn_task_2= findViewById(R.id.task2);
         btn_task_3= findViewById(R.id.task3);
