@@ -14,6 +14,8 @@ public class TaskDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
 
+        this.setTitle("Task Detail");
+
         title=findViewById(R.id.title);
         description=findViewById(R.id.description);
         state = findViewById(R.id.state);
