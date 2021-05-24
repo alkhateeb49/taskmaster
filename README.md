@@ -90,3 +90,16 @@ Added test using Espresso. Currently the tests make sure the MainActivity loads 
 
 
 ---
+## lab 32
+
+### Amplify and DynamoDB
+Using the amplify add api command, create a Task resource that replicates our existing Task schema. Update all references to the Task data to instead use AWS Amplify to access your data in DynamoDB instead of in Room.
+
+---
+## lab 33
+
+### Related Data
+Create a second entity for a team, which has a name and a list of tasks. Update your tasks to be owned by a team.
+
+Manually create three teams by running a mutation exactly three times in your code. (You do NOT need to allow the user to create new teams.)
+---

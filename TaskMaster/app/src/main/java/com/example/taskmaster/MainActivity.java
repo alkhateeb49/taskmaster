@@ -9,9 +9,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.AWSDataStorePlugin;
+import com.amplifyframework.datastore.generated.model.Task;
+
 import static com.example.taskmaster.AppDatabase.databaseWriteExecutor;
 
 
@@ -24,10 +31,22 @@ public class MainActivity extends AppCompatActivity {
     TextView username;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    TaskAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.configure(getApplicationContext());
+
+            Log.i("Tutorial", "Initialized Amplify");
+        } catch (AmplifyException e) {
+            Log.e("Tutorial", "Could not initialize Amplify", e);
+        }
+
         this.setTitle("Main Activity");
         btn_add = findViewById(R.id.addTask);
         btn_all = findViewById(R.id.allTask);
@@ -116,16 +135,35 @@ public class MainActivity extends AppCompatActivity {
         /* */
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Tasks> taskList = AppDatabase.getDatabase(getApplicationContext()).taskDao().getAll();
+//        databaseWriteExecutor.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                List<Tasks> taskList = AppDatabase.getDatabase(getApplicationContext()).taskDao().getAll();
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                recyclerView.setAdapter(new TaskAdapter(   MainActivity.this, taskList));
-            }
-        });
-
-
+//                recyclerView.setAdapter(new TaskAdapter(   MainActivity.this, taskList));
+//            }
+//        });
+        Amplify.DataStore.query(Task.class,
+                todos -> {
+                    List<Tasks> taskList = new ArrayList<>();
+                    while (todos.hasNext()) {
+                        Task todo = todos.next();
+                        Tasks t = new Tasks();
+                        Log.i("Tutorial", "==== Todo ====");
+                        Log.i("Tutorial", "Name: " + todo.getTitle());
+                        Log.i("Tutorial", "Name: " + todo.getBody());
+                        Log.i("Tutorial", "Name: " + todo.getState());
+                        t.setTitle(todo.getTitle());
+                        t.setBody(todo.getBody());
+                        t.setState(todo.getState());
+                        taskList.add(t);
+                        adapter=new TaskAdapter(   MainActivity.this, taskList);
+                    }
+                    recyclerView.setAdapter(adapter);
+                },
+                failure -> Log.e("Tutorial", "Could not query DataStore", failure)
+        );
 
 
 
