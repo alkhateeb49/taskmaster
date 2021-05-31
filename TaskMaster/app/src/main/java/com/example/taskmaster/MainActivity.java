@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.amplifyframework.AmplifyException;
+import com.amplifyframework.api.aws.AWSApiPlugin;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
@@ -38,14 +40,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        try {
+//            Amplify.addPlugin(new AWSDataStorePlugin());
+//            Amplify.configure(getApplicationContext());
+//
+//            Log.i("Tutorial", "Initialized Amplify");
+//        } catch (AmplifyException e) {
+//            Log.e("Tutorial", "Could not initialize Amplify", e);
+//        }
+
         try {
+            Amplify.addPlugin(new AWSCognitoAuthPlugin());
+            Amplify.addPlugin(new AWSApiPlugin());
             Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.configure(getApplicationContext());
 
             Log.i("Tutorial", "Initialized Amplify");
-        } catch (AmplifyException e) {
-            Log.e("Tutorial", "Could not initialize Amplify", e);
+        } catch (AmplifyException failure) {
+            Log.e("Tutorial", "Could not initialize Amplify", failure);
         }
+
+//        Amplify.DataStore.observe(Task.class,
+//                started -> Log.i("Tutorial", "Observation began."),
+//                change -> Log.i("Tutorial", change.item().toString()),
+//                failure -> Log.e("Tutorial", "Observation failed.", failure),
+//                () -> Log.i("Tutorial", "Observation complete.")
+//        );
+        Amplify.Auth.fetchAuthSession(
+                result -> Log.i("AmplifyQuickstart", result.toString()),
+                error -> Log.e("AmplifyQuickstart", error.toString())
+        );
 
         this.setTitle("Main Activity");
         btn_add = findViewById(R.id.addTask);
