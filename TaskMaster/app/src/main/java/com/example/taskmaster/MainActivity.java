@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import com.amplifyframework.AmplifyException;
 import com.amplifyframework.api.aws.AWSApiPlugin;
+import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
+import com.amplifyframework.auth.options.AuthSignOutOptions;
+import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
@@ -29,7 +32,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btn_add, btn_all, btn_task_1, btn_task_2, btn_task_3, btn_setting;
+    Button btn_add, btn_all, btn_task_1, btn_task_2, btn_task_3, btn_setting,btn_signup,btn_signin,btn_logout;
     TextView username;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -51,14 +54,19 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
-            Amplify.addPlugin(new AWSApiPlugin());
-            Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.configure(getApplicationContext());
-
-            Log.i("Tutorial", "Initialized Amplify");
-        } catch (AmplifyException failure) {
-            Log.e("Tutorial", "Could not initialize Amplify", failure);
+            Log.i("MyAmplifyApp", "Initialized Amplify");
+        } catch (AmplifyException error) {
+            Log.e("MyAmplifyApp", "Could not initialize Amplify", error);
         }
+
+//        AuthSignUpOptions options = AuthSignUpOptions.builder()
+//                .userAttribute(AuthUserAttributeKey.email(), "my@email.com")
+//                .build();
+//        Amplify.Auth.signUp("username", "Password123", options,
+//                result -> Log.i("AuthQuickStart", "Result: " + result.toString()),
+//                error -> Log.e("AuthQuickStart", "Sign up failed", error)
+//        );
 
 //        Amplify.DataStore.observe(Task.class,
 //                started -> Log.i("Tutorial", "Observation began."),
@@ -66,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
 //                failure -> Log.e("Tutorial", "Observation failed.", failure),
 //                () -> Log.i("Tutorial", "Observation complete.")
 //        );
-        Amplify.Auth.fetchAuthSession(
-                result -> Log.i("AmplifyQuickstart", result.toString()),
-                error -> Log.e("AmplifyQuickstart", error.toString())
-        );
+//        Amplify.Auth.fetchAuthSession(
+//                result -> Log.i("AmplifyQuickstart", result.toString()),
+//                error -> Log.e("AmplifyQuickstart", error.toString())
+//        );
 
         this.setTitle("Main Activity");
         btn_add = findViewById(R.id.addTask);
@@ -79,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         btn_task_3= findViewById(R.id.task3);
         btn_setting= findViewById(R.id.settings);
         username=findViewById(R.id.username);
+        btn_signup=findViewById(R.id.signup);
+        btn_signin=findViewById(R.id.signin);
+        btn_logout=findViewById(R.id.logout);
 
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -86,10 +97,52 @@ public class MainActivity extends AppCompatActivity {
         username.setText(userName + "\'s Tasks");
 
 
+        if(getIntent().getStringExtra("username")!=null){
+            btn_signup.setVisibility(View.GONE);
+            btn_signin.setVisibility(View.GONE);
+            btn_logout.setVisibility(View.VISIBLE);
+
+        }
+        else{
+            btn_logout.setVisibility(View.GONE);
+            btn_signup.setVisibility(View.VISIBLE);
+            btn_signin.setVisibility(View.VISIBLE);
+        }
+
+
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, AddTask.class);
+                startActivity(i);
+            }
+        });
+
+        btn_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, SignUp.class);
+                startActivity(i);
+            }
+        });
+
+        btn_signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this,SignIn.class);
+                startActivity(i);
+            }
+        });
+
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Amplify.Auth.signOut(
+                        AuthSignOutOptions.builder().globalSignOut(true).build(),
+                        () -> Log.i("AuthQuickstart", "Signed out globally"),
+                        error -> Log.e("AuthQuickstart", error.toString())
+                );
+                Intent i = new Intent(MainActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });
@@ -158,36 +211,36 @@ public class MainActivity extends AppCompatActivity {
 //        taskList.setAdapter(new TaskAdapter(   this, tasks));
         /* */
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+//        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 //        databaseWriteExecutor.execute(new Runnable() {
 //            @Override
 //            public void run() {
 //
 //                List<Tasks> taskList = AppDatabase.getDatabase(getApplicationContext()).taskDao().getAll();
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 //                recyclerView.setAdapter(new TaskAdapter(   MainActivity.this, taskList));
 //            }
 //        });
-        Amplify.DataStore.query(Task.class,
-                todos -> {
-                    List<Tasks> taskList = new ArrayList<>();
-                    while (todos.hasNext()) {
-                        Task todo = todos.next();
-                        Tasks t = new Tasks();
-                        Log.i("Tutorial", "==== Todo ====");
-                        Log.i("Tutorial", "Name: " + todo.getTitle());
-                        Log.i("Tutorial", "Name: " + todo.getBody());
-                        Log.i("Tutorial", "Name: " + todo.getState());
-                        t.setTitle(todo.getTitle());
-                        t.setBody(todo.getBody());
-                        t.setState(todo.getState());
-                        taskList.add(t);
-                        adapter=new TaskAdapter(   MainActivity.this, taskList);
-                    }
-                    recyclerView.setAdapter(adapter);
-                },
-                failure -> Log.e("Tutorial", "Could not query DataStore", failure)
-        );
+//        Amplify.DataStore.query(Task.class,
+//                todos -> {
+//                    List<Tasks> taskList = new ArrayList<>();
+//                    while (todos.hasNext()) {
+//                        Task todo = todos.next();
+//                        Tasks t = new Tasks();
+//                        Log.i("Tutorial", "==== Todo ====");
+//                        Log.i("Tutorial", "Name: " + todo.getTitle());
+//                        Log.i("Tutorial", "Name: " + todo.getBody());
+//                        Log.i("Tutorial", "Name: " + todo.getState());
+//                        t.setTitle(todo.getTitle());
+//                        t.setBody(todo.getBody());
+//                        t.setState(todo.getState());
+//                        taskList.add(t);
+//                        adapter=new TaskAdapter(   MainActivity.this, taskList);
+//                    }
+//                    recyclerView.setAdapter(adapter);
+//                },
+//                failure -> Log.e("Tutorial", "Could not query DataStore", failure)
+//        );
 
 
 
