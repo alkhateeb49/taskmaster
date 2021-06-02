@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
+
+import java.io.File;
 
 public class SignIn extends AppCompatActivity {
 
@@ -38,4 +41,18 @@ public class SignIn extends AppCompatActivity {
 
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AWSCognitoAuthPlugin.WEB_UI_SIGN_IN_ACTIVITY_CODE) {
+            Amplify.Auth.handleWebUISignInResponse(data);
+
+        }
+    }
+
+
+
 }
