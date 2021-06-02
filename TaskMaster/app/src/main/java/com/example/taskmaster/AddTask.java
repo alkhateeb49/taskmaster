@@ -1,12 +1,15 @@
 package com.example.taskmaster;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,10 +17,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.amplifyframework.AmplifyException;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
+import com.amplifyframework.storage.s3.AWSS3StoragePlugin;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static com.example.taskmaster.AppDatabase.databaseWriteExecutor;
@@ -25,7 +35,7 @@ import static com.example.taskmaster.AppDatabase.databaseWriteExecutor;
 public class AddTask extends AppCompatActivity {
 
     EditText title,body,state;
-    Button add;
+    Button add,upload;
     TextView total;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +44,26 @@ public class AddTask extends AppCompatActivity {
         this.setTitle("Add Task");
 
         try {
-            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.addPlugin(new AWSS3StoragePlugin());
+            Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.configure(getApplicationContext());
-
-            Log.i("Tutorial", "Initialized Amplify");
-        } catch (AmplifyException e) {
-            Log.e("Tutorial", "Could not initialize Amplify", e);
+            Log.i("MyAmplifyApp", "Initialized Amplify");
+        } catch (AmplifyException error) {
+            Log.e("MyAmplifyApp", "Could not initialize Amplify", error);
         }
+
+        Amplify.Auth.signInWithWebUI(
+                this,
+                result -> Log.i("AuthQuickStart", result.toString()),
+                error -> Log.e("AuthQuickStart", error.toString())
+        );
+
 
 
         title=findViewById(R.id.title);
         body=findViewById(R.id.body);
         add=findViewById(R.id.addTask);
+        upload=findViewById(R.id.buttonupload);
         state=findViewById(R.id.state);
         total=findViewById(R.id.total);
 
@@ -58,7 +76,6 @@ public class AddTask extends AppCompatActivity {
 //                total.setText("Title : "+ string_Title+ "\n"+ "Description :"+string_Body);
 
                 /* */
-
                 databaseWriteExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -92,6 +109,53 @@ public class AddTask extends AppCompatActivity {
         });
 
 
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFileFromMobileStorage();
+            }
+        });
+
 
     }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AWSCognitoAuthPlugin.WEB_UI_SIGN_IN_ACTIVITY_CODE) {
+            Amplify.Auth.handleWebUISignInResponse(data);
+        }
+        if(requestCode==9999){
+            File file=new File(getApplicationContext().getFilesDir(),"uploads");
+            try{
+                InputStream inputStream=getContentResolver().openInputStream(data.getData());
+                FileUtils.copy(inputStream,new FileOutputStream(file));
+                uploadFile(file,"thisIsMyKey");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void getFileFromMobileStorage(){
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.setType("*/*");
+        startActivityForResult(i,9999);
+    }
+
+    public void uploadFile(File file, String fileName){
+        Amplify.Storage.uploadFile(
+                fileName,
+                file,
+                result -> Log.i("MyAmplifyApp", "Successfully uploaded: " + result.getKey()),
+                storageFailure -> Log.e("MyAmplifyApp", "Upload failed", storageFailure)
+        );
+    }
+
 }

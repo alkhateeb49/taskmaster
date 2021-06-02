@@ -1,5 +1,6 @@
 package com.example.taskmaster;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,7 +8,9 @@ import androidx.room.Room;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -23,10 +26,16 @@ import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
+import com.amplifyframework.storage.s3.AWSS3StoragePlugin;
 
 import static com.example.taskmaster.AppDatabase.databaseWriteExecutor;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,12 +62,21 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         try {
+            Amplify.addPlugin(new AWSS3StoragePlugin());
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.configure(getApplicationContext());
             Log.i("MyAmplifyApp", "Initialized Amplify");
         } catch (AmplifyException error) {
             Log.e("MyAmplifyApp", "Could not initialize Amplify", error);
         }
+
+        Amplify.Auth.signInWithWebUI(
+                this,
+                result -> Log.i("AuthQuickStart", result.toString()),
+                error -> Log.e("AuthQuickStart", error.toString())
+        );
+
+
 
 //        AuthSignUpOptions options = AuthSignUpOptions.builder()
 //                .userAttribute(AuthUserAttributeKey.email(), "my@email.com")
@@ -245,4 +263,44 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+//
+//    @RequiresApi(api = Build.VERSION_CODES.Q)
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (requestCode == AWSCognitoAuthPlugin.WEB_UI_SIGN_IN_ACTIVITY_CODE) {
+//            Amplify.Auth.handleWebUISignInResponse(data);
+//
+//        }
+//        if(requestCode==9999){
+//            File file=new File(getApplicationContext().getFilesDir(),"uploads");
+//            try{
+//                InputStream inputStream=getContentResolver().openInputStream(data.getData());
+//                FileUtils.copy(inputStream,new FileOutputStream(file));
+//                uploadFile(file,"thisIsMyKey");
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+//
+//    public void getFileFromMobileStorage(){
+//        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//        i.setType("*/*");
+//        startActivityForResult(i,9999);
+//    }
+//
+//    public void uploadFile(File file, String fileName){
+//        Amplify.Storage.uploadFile(
+//                fileName,
+//                file,
+//                result -> Log.i("MyAmplifyApp", "Successfully uploaded: " + result.getKey()),
+//                storageFailure -> Log.e("MyAmplifyApp", "Upload failed", storageFailure)
+//        );
+//    }
 }
