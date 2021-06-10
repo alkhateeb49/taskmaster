@@ -125,3 +125,40 @@ On the “Add a Task” activity, allow users to optionally select a file to att
 On the Task detail activity, if there is a file that is an image associated with a particular Task, that image should be displayed within that activity. (If the file is any other type, you should display a link to it.)
 
 ![image description](screenshots/7.png)
+
+---
+
+## lab 38
+
+### Notifications
+
+Store which team a user is part of in the cloud
+Add a Lambda trigger on task creation
+Use SNS to send a notification as part of that Lambda file should be uploaded to S3, and associated with that task.
+
+![image description](screenshots/8.png)
+
+---
+
+## lab 41
+
+### Intent Filters
+
+Adding a Task from Another Application
+Add an intent filter to your application such that a user can hit the “share” button on an image in another application, choose TaskMaster as the app to share that image with, and be taken directly to the Add a Task activity with that image pre-selected.
+
+`No screenshots, since the app keep cracking`
+
+---
+
+## Lab 42
+
+### Location
+
+- - Location
+When the user adds a task, their location should be retrieved and included as part of the saved Task.
+
+- - Displaying Location
+On the Task Detail activity, the location of a Task should be displayed if it exists.
+
+![image description](screenshots/9.png)

@@ -41,6 +41,49 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+     FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+        @Override
+        public void onComplete(@NonNull com.google.android.gms.tasks.Task<String> task) {
+            if (!task.isSuccessful()) {
+                Log.w("FCM token ...", "Fetching FCM is failed", task.getException());
+                return;
+            }
+            String token = task.getResult();
+            Log.d("FCM TOKEN ...",task.getResult());
+        }
+    });
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AWSCognitoAuthPlugin.WEB_UI_SIGN_IN_ACTIVITY_CODE) {
+            Amplify.Auth.handleWebUISignInResponse(data);
+        }
+    }
+
+    protected void uploadFile(Context context){
+        File file = new File(context.getFilesDir(), "key0");
+
+        try{
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.append("test");
+            bufferedWriter.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        Amplify.Storage.uploadFile(
+                "key0",
+                file,
+                result -> Log.i("uploadFile", "Successfully Uploaded: "+ result.getKey()),
+                error -> Log.e("uploadFile", "Storage Failure: "+error)
+        );
+
+    }
+
     Button btn_add, btn_all, btn_task_1, btn_task_2, btn_task_3, btn_setting,btn_signup,btn_signin,btn_logout;
     TextView username;
     SharedPreferences sharedPreferences;
