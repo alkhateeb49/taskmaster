@@ -15,11 +15,22 @@ public class Tasks {
     String body;
     @ColumnInfo(name = "state")
     String state;
+    @ColumnInfo(name = "image")
+    String image;
 
-    public Tasks(String title, String body, String state) {
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Tasks(String title, String body, String state,String image) {
         this.title = title;
         this.body = body;
         this.state = state;
+        this.image = image;
     }
 
     public Tasks() {

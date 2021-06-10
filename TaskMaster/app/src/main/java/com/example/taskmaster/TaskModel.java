@@ -20,11 +20,13 @@ public class TaskModel extends Fragment {
     private static final String ARG_PARAM1 = "title";
     private static final String ARG_PARAM2 = "body";
     private static final String ARG_PARAM3 = "state";
+    private static final String ARG_PARAM4 = "image";
 
     // TODO: Rename and change types of parameters
     private String mTitle;
     private String mBody;
     private String mState;
+    private String mImage;
 
     public TaskModel() {
         // Required empty public constructor
@@ -37,15 +39,17 @@ public class TaskModel extends Fragment {
      * @param title Parameter 1.
      * @param body Parameter 2.
      * @param state Parameter 3.
+     * @param image Parameter 4.
      * @return A new instance of fragment TaskModel.
      */
     // TODO: Rename and change types and number of parameters
-    public static TaskModel newInstance(String title, String body,String state) {
+    public static TaskModel newInstance(String title, String body,String state,String image) {
         TaskModel fragment = new TaskModel();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, title);
         args.putString(ARG_PARAM2, body);
         args.putString(ARG_PARAM3, state);
+        args.putString(ARG_PARAM4, image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,6 +61,7 @@ public class TaskModel extends Fragment {
             mTitle = getArguments().getString(ARG_PARAM1);
             mBody = getArguments().getString(ARG_PARAM2);
             mState = getArguments().getString(ARG_PARAM3);
+            mImage = getArguments().getString(ARG_PARAM4);
 
             // Event listener action
 
